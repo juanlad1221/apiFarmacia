@@ -1,0 +1,134 @@
+<%- include('block_inicio') %>
+<%- include('barra_menu') %>
+
+<div class="container">
+    <br><br>
+    <div class="row d-flex justify-content-center">
+        <h1>Nuevo Usuario</h1>
+    </div>
+    <br><br>
+
+    <div class="row  d-flex justify-content-center">
+        <div class="bt p-4" style="width: 400px;height: 340px; background: #D8D8D8; border-radius: 3%;">
+            <!--<form action="/usuarios" method="POST">-->
+                <div class="form-group">
+                    <label class="" for=""><strong>Usuario</strong></label>
+                    <input type="text" name="user" class="form-control" id="user" placeholder="User">
+                </div>
+
+                <div class="form-group">
+                    <label class="" for=""><strong>Password</strong></label>
+                    <input type="password" name="pass" class="form-control" id="pass" placeholder="Password">
+                </div>
+
+                <div class="form-group">
+                    <label class="" for=""><strong>Pin (4 numeros)</strong></label>
+                    <input type="text" name="pin" class="form-control" id="pin" placeholder="Pin">
+                </div>
+                <br>
+                <button id="btn" class="btn btn-secondary">Enviar</button>
+
+           <!--</form>--> 
+        </div>
+    </div>
+</div>
+
+<!--Modal Pin-->
+<div id="myModal2" class="modal fade " tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        
+        <div class="modal-header">
+          <h5 class="modal-title"><strong>Confirmar PIN</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+            <input type="text" class="form-control" id="pin2" placeholder="">
+        </div>
+        
+        <div class="modal-footer">
+          <button id="btn_canc_pin" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button id="btn2" style="width: 19%;" type="button" class="btn btn-primary">Confirmar</button>
+        </div>
+    
+      </div>
+    </div>
+</div>
+
+<%- include('block_end') %>
+
+<style>
+    .bt {
+        border: 3px solid grey;
+    }
+</style>
+
+<script>
+    let btn = document.getElementById('btn');
+    let user = document.getElementById('user');
+    let pass = document.getElementById('pass');
+    let pin = document.getElementById('pin');
+    let btn2 = document.getElementById('btn2')
+    let btn_canc_pin = document.getElementById('btn_canc_pin')
+    let pin2 = document.getElementById('pin2')
+
+    //Limpio los input con el evento click
+    user.onclick = () => {
+        user.value = '';
+    }
+    pass.onclick = () => {
+        pass.value = '';
+    }
+    pin.onclick = () => {
+        pin.value = '';
+    }
+
+
+    btn.onclick = () => {
+        if (user.value == '' || user.value == ' ' || pass.value == '' || pass.value == ' ' || pin.value == '' || pin.value == ' ') { alert('Error: Los Campos NO Pueden Estar Vacios'); return false }
+        
+        if (!FrontValidate.input('user',['presence','no_space',{min:4},{max:15}],'windows')){
+            if(!FrontValidate.input('pass',['presence','no_space',{min:4},{max:15}],'windows')){
+                if(!FrontValidate.input('pin',['presence','no_space','no_letters',{min:4},{max:4}],'windows')){
+                    //Llamo al modal
+                    $('#myModal2').modal('show')
+                    
+                }
+            }
+        }
+        
+       
+    }//end click
+
+
+    btn2.onclick = ()=> {
+        if(pin2.value == localStorage.getItem('pin')){
+            $.ajax({
+            type:'POST',
+            url:'/usuarios',
+            data:{user:user.value, pass:pass.value, pin:pin.value}
+        }).done(function(res){
+            if(res.message == true){
+                window.location = '/msg_ok'
+            }
+        })
+        .fail(async function(err){
+            console.error('Error: '+ err)
+            toastr.error('La Operacion NO Pudo Resolverse', 'ERROR', { timeOut: 3000 })
+            await sleep(2000)
+            window.location.reload()
+        })
+        }else{
+            alert('Error: PIN Incorrecto')
+        }
+    }
+    btn_canc_pin.onclick = ()=> {
+            window.location.reload();
+    }
+
+
+    
+</script>

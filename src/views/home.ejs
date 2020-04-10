@@ -1,0 +1,12 @@
+<%- include('block_inicio') %>
+<%- include('barra_menu') %>
+<div class="container">
+    <h1>home</h1>
+</div>
+<a href="<%=pin%>" style="visibility: hidden;" id="pin"></a>
+<%- include('block_end') %>
+<script>
+let pin = document.getElementById('pin')
+localStorage.setItem('pin','')
+localStorage.setItem('pin', pin.getAttribute('href'))
+</script>

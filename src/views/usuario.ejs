@@ -1,0 +1,188 @@
+<%- include('block_inicio') %>
+<%- include('barra_menu') %>
+<div class="container">
+    <br><br>
+    <div class="row">
+        <h1 class="">Usuarios</h1>
+        <a href="/usuarios_nuevo" class="add">
+            <i class="fas fa-user-plus fa-2x ml-2 mt-2"></i>
+        </a>
+    </div>
+
+    <br><br>
+    <div class="d-flex justify-content-center p-4">
+        <table id="example" class="table table-striped table-bordered" style="width: auto;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(i in data){ %>
+                <tr>
+                    <td><%=data[i]._id%></td>
+                    <td><%=data[i].username%></td>
+                    <td style="text-align: left;"><%=data[i].password%></td>
+                    <% if(String(data[i]._id) == usuario_actual) {%>
+                        <td>
+                            <a>
+                                <i class="fas fa-user fa-lg disabled"></i>
+                            </a>
+                        </td>
+                    <%} else {%>
+                    <td>
+                        <a class="boton" href="" data-toggle="modal" data-target="#myModal">
+                                <i class="fas fa-trash-alt fa-lg"></i>
+                        </a>
+                    </td>
+                    <%}%>
+                </tr>
+                <%}%>
+            </tbody>
+            
+        </table>
+    </div>
+</div>
+
+
+<div id="myModal" class="modal fade " tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            
+            <div class="modal-header">
+              <h5 class="modal-title"><strong>Baja Usuario</strong></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            
+            <div class="modal-body">
+              <p>Ud. Dará de Baja el Usuario. ¿Decea hacerlo?</p>
+            </div>
+            
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+              <button id="btn" style="width: 15%;" data-toggle="modal" data-target="#myModal2" type="button" class="btn btn-primary">Si</button>
+              
+            </div>
+          </div>
+        </div>
+</div>
+
+<!--Modal Pin-->
+<div id="myModal2" class="modal fade " tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        
+        <div class="modal-header">
+          <h5 class="modal-title"><strong>Confirmar PIN</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+            <input type="text" class="form-control" id="pin" placeholder="">
+        </div>
+        
+        <div class="modal-footer">
+          <button id="btn_canc_pin" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button id="btn2" style="width: 19%;" type="button" class="btn btn-primary">Confirmar</button>
+        </div>
+    
+      </div>
+    </div>
+</div>
+
+     
+
+<%- include('block_end') %>
+                <style>
+                    thead tr {
+                        text-align: center;
+                    }
+
+                    tbody tr {
+                        text-align: center;
+                    }
+
+                    a :hover {
+                        color: red;
+                    }
+
+                    .add :hover {
+                        color: green;
+                    }
+                </style>
+
+                <script>
+                    let btn = document.getElementById('btn')
+                    let btn2 = document.getElementById('btn2')
+                    let btn_canc_pin = document.getElementById('btn_canc_pin')
+                    let pin = document.getElementById('pin')
+
+
+                    //Muestra la tabla
+                    $('#example').DataTable();
+
+
+                    //Obtiene el id del elemento a eliminar
+                    $(".boton").click(function () {
+                        let id = [];
+                        // Obtenemos todos los valores contenidos en los <td> de la fila
+                        // seleccionada
+                        $(this).parents("tr").find("td").each(function () {
+                            id.push($(this).html())
+                        });
+                        //Limpio el local storage id_user
+                        localStorage.setItem('id_user', '');
+                        //Guardo en el storage id_user
+                        localStorage.setItem('id_user', id[0]);
+                    })
+
+
+                    function Baja_User() {
+                        let id_user = localStorage.getItem('id_user')
+                        //Limpio el local storage id_user
+                        localStorage.setItem('id_user', '');
+                        //btn.setAttribute('name', id_user)
+                        $.ajax({
+                            type: 'DELETE',
+                            url: '/delete',
+                            //contentType: "application/json; charset=utf-8",
+                            data: { user: id_user }
+                        }).done(function (res) {
+                            if(res.success == true){
+                                console.log('respuesta de ajax true...')
+                                localStorage.setItem('id_user', true);
+                                window.location.reload()
+                            }
+                        }).fail(function (err) {
+                            console.log(err)
+                        })
+                    }
+
+                    window.onload = () => {
+                        if (localStorage.getItem('id_user') == 'true') {
+                            localStorage.setItem('id_user', '')
+                            toastr.success('La Operacion Fue Exitosa', '¡OK!', { timeOut: 3000 })
+                            return false
+                        }
+                    }
+
+                    btn2.onclick = ()=> {
+                        if(pin.value == localStorage.getItem('pin')){
+                            Baja_User()
+                        }else{
+                            alert('Error: PIN Incorrecto')
+                        }
+                    }
+                    btn_canc_pin.onclick = ()=> {
+                        window.location.reload();
+                    }
+
+
+                </script>

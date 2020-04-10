@@ -1,0 +1,88 @@
+<!--NavBar-->
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light" style="background:#6E6E6E !important;height:10% !important">
+  <a class="navbar-brand" href="#" style="color:white">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav ml-auto" style="margin-right: 10%;">
+      <li class="nav-item dropdown active">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:white">
+          <%=user%>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/logout">Cerrar Sesion</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <a class="p-2 icono" id="showRightPush" style="color:white;margin-top:0%;margin-right:1%">
+    <i class="fa fa-bars fa-lg" style="font-size:150%"></i>
+</a>
+
+</nav>
+
+<!--Menu lateral-->
+<nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-right" id="cbp-spmenu-s2">
+    <!--Titulo Menu-->
+    <div class="d-flex justify-content-center align-items-center" style="background:#424242;height:10%">
+        <h3 class="p-2 white font-2 size30">Menu</h3>
+    </div>
+    <!--Info User-->
+    <div class="d-flex flex-column align-items-center">
+         <img src="/img/img.jpg" alt="user-image" class="rounded-circle mt-3"
+         style="width:25%;">
+         <h3 style="color:grey" class="font-2 mt-3"><%=global.user_rol%></h3>
+         <a href="">SEM Nativa 1.0</a>
+    </div>
+         
+    
+    <!--Acordeon-->
+    <ul id="accordion" class="accordion font-1">
+      <li>
+        <a id="link_home" href="/home" class="link" style="text-decoration: none;">HOME</a>
+      </li>
+      <li>
+        <a id="link_home" href="/usuarios" class="link" style="text-decoration: none;">USUARIOS</a>
+        <!--<div class="link">USUARIOS<i class="fa fa-chevron-down"></i></div>
+        <ul class="submenu">
+          <li><a href="/usuarios">Usuarios</a></li>
+        </ul>-->
+      </li>
+      <li>
+        <div class="link">FARMACIAS<i class="fa fa-chevron-down"></i></div>
+        <ul class="submenu">
+            <li><a href="/farmacias">Farmacias</a></li>
+            <li><a href="/crearSchema">Crear Schema</a></li>
+            <li><a href="/schemas">Schemas</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <div class="link">USUARIOS<i class="fa fa-chevron-down"></i></div>
+        <ul class="submenu">
+          <% if(global.user_rol == 'Secretaria'){ %>
+            <li><a href="/nuevo_usuario">Nuevo Usuario</a></li>
+            <li><a href="">Buscar Usuarios</a></li>
+            <li><a href="">Baja de Usuarios</a></li>
+          <%}%>
+        </ul>
+      </li>
+        
+      <% if(global.user_rol == 'Secretaria'){ %>
+      <li>
+          <div class="link">CONFIGURACIÓN<i class="fa fa-chevron-down"></i></div>
+            <ul class="submenu">
+              <li><a href="#">Tablet</a></li>
+              <li><a href="#">Mobile</a></li>
+              <li><a href="#">Desktop</a></li>
+              <li><a href="#">Desktop2</a></li>
+              <li><a href="#">Desktop3</a></li>
+            </ul>
+      </li>
+      <% } %>
+    </ul>
+</nav>

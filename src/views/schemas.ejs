@@ -1,0 +1,168 @@
+<%- include('block_inicio') %>
+<%- include('barra_menu') %>
+<div class="container font-1">
+    <br>
+    <div class="row d-flex justify-content-center">
+        <h1 class="">Schemas</h1>
+    </div>
+    <br>
+
+    <div class="row d-flex justify-content-center">
+        <table id="example" class="table table-striped table-bordered" style="width: auto; text-align: center;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Farmacia</th>
+                    <th>Direccion</th>
+                    <th>Tel Fijo</th>
+                    <th>Tel Movil</th>
+                    <th>Localidad</th>
+                    <th>Dias en Turno</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <% for(let i in data){ %>
+                <tr>
+                    <td><%=data[i]._id%></td>
+                    <td><%=data[i].name%></td>
+                    <td><%=data[i].address%></td>
+                    <td><%=data[i].phone%></td>
+                    <td><%=data[i].movil%></td>
+                    <td><%=data[i].location%></td>
+                    <td style="font-weight: bold">
+                    <% data[i].dates.forEach(function(e){ %>
+                        
+                        <%=formatear_fecha_larga(e)%>
+                    
+                     <% }) %>
+                    </td>
+                    <td>
+                        <a class="boton" href="" data-toggle="modal" data-target="#myModal">
+                            <i class="fas fa-trash-alt fa-lg"></i>
+                        </a>
+                    </td>
+                </tr>
+                <%}%>
+            </tbody>
+            
+        </table>
+    </div>
+</div>
+
+
+
+
+<!--Modal confirmacion-->
+<div id="myModal" class="modal fade " tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        
+        <div class="modal-header">
+          <h5 class="modal-title"><strong>Baja Usuario</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <p>Ud. Dará de Baja el Schema Selecionado. ¿Decea hacerlo?</p>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          <button id="btn" style="width: 15%;" data-toggle="modal" data-target="#myModal2"  type="button" class="btn btn-primary">Si</button>
+        </div>
+    
+      </div>
+    </div>
+</div>
+<!--Modal Pin-->
+<div id="myModal2" class="modal fade " tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        
+        <div class="modal-header">
+          <h5 class="modal-title"><strong>Confirmar PIN</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+            <input type="text" class="form-control" id="pin" placeholder="">
+        </div>
+        
+        <div class="modal-footer">
+          <button onclick="window.location.reload()" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button onclick=BajaSchema() style="width: 19%;" type="button" class="btn btn-primary">Confirmar</button>
+        </div>
+    
+      </div>
+    </div>
+</div>
+<%function formatear_fecha_larga(fecha) {%>
+    <%let nueva_fecha = new Date(fecha)%>
+    <%return (nueva_fecha.getDate() + '/' + (nueva_fecha.getMonth() + 1) + '/' + nueva_fecha.getFullYear())%>
+<%}%>
+<%- include('block_end') %>
+<style>
+a :hover{
+    color: red;
+}
+</style>
+<script>
+let pin = document.getElementById('pin')
+
+
+//Muestra la tabla
+$('#example').DataTable();
+
+//Obtiene el id del elemento a eliminar
+$(".boton").click(function () {
+    let id = [];
+    // Obtenemos todos los valores contenidos en los <td> de la fila
+    // seleccionada
+    $(this).parents("tr").find("td").each(function () {
+        id.push($(this).html())
+    });
+    //Limpio el local storage id_user
+    localStorage.setItem('id_schema', '');
+    //Guardo en el storage id_user
+    localStorage.setItem('id_schema', id[0]);
+    //alert(localStorage.getItem('id_schema'))
+})
+
+function BajaSchema(){
+    //cierro modal
+    $('#myModal').modal('hide')
+
+    if(pin.value == localStorage.getItem('pin')){
+        //cierro modal pin
+        $('#myModal2').modal('hide')
+        
+        $.ajax({
+            type: 'PUT',
+            url: '/down_schema',
+            data: { id_schema: localStorage.getItem('id_schema') }
+        }).done(async function (res) {
+            toastr.success('La Operacion Fue Exitosa', '¡OK!', { timeOut: 3000 })
+            await sleep(2000)
+            window.location.reload()
+        }).fail(async function (err) {
+            toastr.error('La Operacion NO Pudo Resolverse', 'ERROR', { timeOut: 3000 })
+            await sleep(2000)
+            window.location.reload()
+        })
+    }else{
+        alert('Error: PIN Incorrecto')
+    }//end if
+}//end baja
+
+
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+</script>
